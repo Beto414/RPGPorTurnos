@@ -3,8 +3,10 @@ using JogoBatalha.Personagens;
 using JogoBatalha.Personagens.Herois;
 using JogoBatalha.Personagens.Inimigos;
 using JogoBatalha.Personagens.Inimigos.Deserto;
+using JogoBatalha.Personagens.Inimigos.Floresta;
 using JogoBatalha.Personagens.Inimigos.Gelo;
 using JogoBatalha.Personagens.Inimigos.Pantano;
+using JogoBatalha.Personagens.Inimigos.Ruinas;
 using System;
 using System.Collections.Generic;
 
@@ -117,6 +119,8 @@ namespace JogoBatalha.Jogo
             if (bioma is BiomaGelo) return new DragaoDeRaios();
             if (bioma is BiomaPantano) return new CobraGigante();
             if (bioma is BiomaDeserto) return new Saruman();
+            if (bioma is BiomaFloresta) return new ElementalDeFogo();
+            if (bioma is BiomaRuinas) return new ReiBruxoDeAngmar();
 
             throw new Exception("Bioma desconhecido, não foi possível encontrar o chefe.");
         }

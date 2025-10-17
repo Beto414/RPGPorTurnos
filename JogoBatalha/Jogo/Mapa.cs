@@ -66,7 +66,23 @@ namespace JogoBatalha.Jogo
                     "Uma tempestade de areia se aproxima, forçando-os a procurar abrigo em uma fenda rochosa. O vento uiva como um espírito atormentado, e a areia chicoteia a pedra, erodindo o mundo ao seu redor.",
                     "Ao anoitecer, o deserto se transforma. A temperatura cai drasticamente, e o céu se enche de estrelas brilhantes. Eles montam acampamento, revezando-se na vigília contra os predadores noturnos.",
                     "O grupo encontra um oásis escondido, uma joia de vida no meio da desolação. Eles reabastecem seus cantis e descansam à sombra das palmeiras, um breve momento de paz antes de continuar a jornada."
-                }
+                },
+                ["Floresta"] = new List<string>
+    {
+        "Após a batalha, os heróis encontram um riacho de águas cristalinas, cujas águas parecem restaurar um pouco de sua vitalidade.",
+        "A trilha os leva a um círculo de pedras antigas que pulsam com uma energia serena. Descansar ali parece acelerar sua recuperação.",
+        "O grupo avista um cervo branco espectral que os guia por um atalho seguro, longe dos olhos de mais inimigos.",
+        "Sob a copa de uma árvore ancestral, eles encontram gravuras que contam histórias de heróis do passado, inspirando-os a continuar.",
+        "A luz do sol se filtra pelas folhas, criando um espetáculo de luz e sombra que renova o ânimo do grupo para a próxima etapa."
+    },
+                ["Ruinas"] = new List<string>
+    {
+        "Entre os escombros, os heróis encontram um altar esquecido. Uma prece silenciosa parece fortalecer seus espíritos contra a escuridão.",
+        "Eles decifram runas em uma parede desmoronada, aprendendo sobre uma fraqueza secreta dos mortos-vivos que habitam o local.",
+        "Um vento fantasmagórico sopra pelos corredores, carregando sussurros de advertência que os ajudam a evitar uma armadilha mortal.",
+        "O grupo encontra o diário de um antigo guarda, detalhando a queda da cidade. Sua coragem inspira os heróis a não cometerem os mesmos erros.",
+        "Em uma câmara escondida, eles encontram um frasco de água benta, uma arma potente contra as criaturas profanas que os aguardam."
+    }
             };
             _narrativasDisponiveis = new Dictionary<string, List<string>>(_narrativasOriginais);
         }
@@ -101,13 +117,28 @@ namespace JogoBatalha.Jogo
         private void ApresentarEncruzilhada()
         {
             Console.WriteLine("\nApós derrotar o guardião, os heróis chegam a uma encruzilhada.");
-            Console.WriteLine("1. O caminho da Floresta Congelada.");
-            Console.WriteLine("2. O caminho do Pântano Sombrio.");
-            Console.WriteLine("3. O caminho do Deserto de Fogo.");
-            int escolha = UserInput.GetInt("Escolha o próximo caminho (1, 2 ou 3): ", 1, 3);
-            if (escolha == 1) _biomasDaJornada.Add(new BiomaGelo());
-            else if (escolha == 2) _biomasDaJornada.Add(new BiomaPantano());
-            else _biomasDaJornada.Add(new BiomaDeserto());
+
+            var todosOsBiomas = new List<Bioma> { new BiomaGelo(), new BiomaPantano(), new BiomaDeserto(), new BiomaFloresta(), new BiomaRuinas() };
+            var biomasVisitados = _biomasDaJornada.Select(b => b.GetType()).ToList();
+            var biomasDisponiveis = todosOsBiomas.Where(b => !biomasVisitados.Contains(b.GetType())).ToList();
+
+            Console.WriteLine("Caminhos inéditos se abrem à frente:");
+            for (int i = 0; i < biomasDisponiveis.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. O caminho de {biomasDisponiveis[i].Nome}.");
+            }
+
+            int? escolha = null;
+            while (escolha == null)
+            {
+                escolha = UserInput.GetInt($"Escolha o próximo caminho (1-{biomasDisponiveis.Count}): ", 1, biomasDisponiveis.Count);
+                if (escolha == null)
+                {
+                    Console.WriteLine("Ação inválida neste menu. Por favor, escolha um caminho.");
+                }
+            }
+
+            _biomasDaJornada.Add(biomasDisponiveis[escolha.Value - 1]);
         }
 
         public void NarrarVitoria()

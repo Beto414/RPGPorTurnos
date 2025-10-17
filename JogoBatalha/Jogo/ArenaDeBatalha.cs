@@ -1,4 +1,5 @@
-﻿using JogoBatalha.Personagens;
+﻿using JogoBatalha.Habilidades;
+using JogoBatalha.Personagens;
 using JogoBatalha.Personagens.Herois;
 using JogoBatalha.Personagens.Inimigos;
 using System;
@@ -83,56 +84,73 @@ namespace JogoBatalha.Jogo
             Console.WriteLine("2. Defender");
             Console.WriteLine("3. Usar Habilidade");
             Console.WriteLine($"4. Usar Poção de Cura ({_grupoDeHerois.PocoesDeCura} restantes)");
+            Console.WriteLine("\n(Digite 'v' a qualquer momento para voltar ao menu de ações)");
 
-            int escolhaAcao = UserInput.GetInt("Escolha sua ação (1-4): ", 1, 4);
+            int? escolhaAcao = UserInput.GetInt("Escolha sua ação (1-4): ", 1, 4);
 
-            if (escolhaAcao == 1)
+            if (escolhaAcao == null)
             {
-                var alvo = EscolherAlvoInimigo(inimigos);
-                heroi.Atacar(alvo);
+                ExecutarTurnoDoHeroi(heroi, inimigos);
+                return;
             }
-            else if (escolhaAcao == 2)
-            {
-                heroi.Defender();
-            }
-            else if (escolhaAcao == 4)
-            {
-                if (_grupoDeHerois.UsarPocao())
-                {
-                    Console.WriteLine("\nEscolha um aliado para curar:");
-                    var alvoCura = EscolherAlvoAliado();
-                    int cura = (int)(alvoCura.PontosDeVidaMax * 0.40);
-                    alvoCura.Curar(cura);
-                }
-                else
-                {
-                    Console.WriteLine("Não há mais poções de cura! Escolha outra ação.");
-                    Thread.Sleep(1500);
-                    ExecutarTurnoDoHeroi(heroi, inimigos);
-                }
-            }
-            else
-            {
-                Console.WriteLine("\nHabilidades disponíveis:");
-                for (int i = 0; i < heroi.Habilidades.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {heroi.Habilidades[i].Nome}");
-                }
-                int escolhaHabilidade = UserInput.GetInt("Escolha a habilidade: ", 1, heroi.Habilidades.Count);
-                var habilidadeEscolhida = heroi.Habilidades[escolhaHabilidade - 1];
 
-                Personagem alvo;
-                if (habilidadeEscolhida.Alvo == Habilidades.TipoDeAlvo.Aliado)
-                {
-                    Console.WriteLine("\nEscolha um aliado como alvo:");
-                    alvo = EscolherAlvoAliado();
-                }
-                else
-                {
-                    alvo = EscolherAlvoInimigo(inimigos);
-                }
+            switch (escolhaAcao.Value)
+            {
+                case 1:
+                    var alvoAtaque = EscolherAlvoInimigo(inimigos);
+                    if (alvoAtaque == null) { ExecutarTurnoDoHeroi(heroi, inimigos); return; }
+                    heroi.Atacar(alvoAtaque);
+                    break;
+                case 2:
+                    heroi.Defender();
+                    break;
+                case 4:
+                    if (_grupoDeHerois.UsarPocao())
+                    {
+                        Console.WriteLine("\nEscolha um aliado para curar:");
+                        var alvoCura = EscolherAlvoAliado();
+                        if (alvoCura == null)
+                        {
+                            _grupoDeHerois.DevolverPocao();
+                            ExecutarTurnoDoHeroi(heroi, inimigos);
+                            return;
+                        }
+                        int cura = (int)(alvoCura.PontosDeVidaMax * 0.40);
+                        alvoCura.Curar(cura);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Não há mais poções de cura! Escolha outra ação.");
+                        Thread.Sleep(1500);
+                        ExecutarTurnoDoHeroi(heroi, inimigos);
+                    }
+                    break;
+                case 3:
+                    Console.WriteLine("\nHabilidades disponíveis:");
+                    for (int i = 0; i < heroi.Habilidades.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {heroi.Habilidades[i].Nome}");
+                    }
+                    int? escolhaHabilidade = UserInput.GetInt("Escolha a habilidade: ", 1, heroi.Habilidades.Count);
+                    if (escolhaHabilidade == null) { ExecutarTurnoDoHeroi(heroi, inimigos); return; }
 
-                heroi.UsarHabilidade(escolhaHabilidade - 1, alvo, inimigos.Cast<Personagem>().ToList());
+                    var habilidadeEscolhida = heroi.Habilidades[escolhaHabilidade.Value - 1];
+
+                    Personagem alvoHabilidade;
+                    if (habilidadeEscolhida.Alvo == TipoDeAlvo.Aliado)
+                    {
+                        Console.WriteLine("\nEscolha um aliado como alvo:");
+                        alvoHabilidade = EscolherAlvoAliado();
+                    }
+                    else
+                    {
+                        alvoHabilidade = EscolherAlvoInimigo(inimigos);
+                    }
+
+                    if (alvoHabilidade == null) { ExecutarTurnoDoHeroi(heroi, inimigos); return; }
+
+                    heroi.UsarHabilidade(escolhaHabilidade.Value - 1, alvoHabilidade, inimigos.Cast<Personagem>().ToList());
+                    break;
             }
         }
 
@@ -144,8 +162,9 @@ namespace JogoBatalha.Jogo
             {
                 Console.WriteLine($"{i + 1}. {inimigosVivos[i].Nome} (HP: {inimigosVivos[i].PontosDeVida})");
             }
-            int escolhaAlvo = UserInput.GetInt("Alvo: ", 1, inimigosVivos.Count);
-            return inimigosVivos[escolhaAlvo - 1];
+            int? escolhaAlvo = UserInput.GetInt("Alvo: ", 1, inimigosVivos.Count);
+            if (escolhaAlvo == null) return null;
+            return inimigosVivos[escolhaAlvo.Value - 1];
         }
 
         private Personagem EscolherAlvoAliado()
@@ -156,8 +175,9 @@ namespace JogoBatalha.Jogo
             {
                 Console.WriteLine($"{i + 1}. {heroisVivos[i].Nome} (HP: {heroisVivos[i].PontosDeVida}/{heroisVivos[i].PontosDeVidaMax})");
             }
-            int escolhaAlvo = UserInput.GetInt("Alvo: ", 1, heroisVivos.Count);
-            return heroisVivos[escolhaAlvo - 1];
+            int? escolhaAlvo = UserInput.GetInt("Alvo: ", 1, heroisVivos.Count);
+            if (escolhaAlvo == null) return null;
+            return heroisVivos[escolhaAlvo.Value - 1];
         }
 
         private void ExecutarTurnoDoInimigo(Inimigo inimigo, List<Personagem> herois)

@@ -7,8 +7,17 @@ namespace JogoBatalha.Jogo
     public class GrupoDeHerois
     {
         public List<Personagem> Herois { get; private set; }
-
         public int PocoesDeCura { get; private set; }
+
+        public GrupoDeHerois()
+        {
+            Herois = new List<Personagem>();
+        }
+
+        public void AdicionarHeroi(Personagem heroi)
+        {
+            Herois.Add(heroi);
+        }
 
         public void ResetarPocoes()
         {
@@ -25,14 +34,9 @@ namespace JogoBatalha.Jogo
             return false;
         }
 
-        public GrupoDeHerois()
+        public void DevolverPocao()
         {
-            Herois = new List<Personagem>();
-        }
-
-        public void AdicionarHeroi(Personagem heroi)
-        {
-            Herois.Add(heroi);
+            PocoesDeCura++;
         }
 
         public bool EstaoTodosMortos()
