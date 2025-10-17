@@ -37,8 +37,8 @@ A solução foi projetada com foco em código limpo, manutenibilidade e separaç
 -   **12 Habilidades Únicas:** Cada herói possui 4 habilidades distintas, incluindo ataques poderosos, buffs para aliados e debuffs para inimigos.
 
 ### Mundo do Jogo e Progressão
--   **Bestiário com 19 Inimigos:** Inclui **15 inimigos normais** com comportamentos únicos, **3 chefes únicos** no final de cada bioma e **1 chefe final (Sauron)** com múltiplas fases e ataques.
--   **3 Biomas Distintos:** Gelo, Pântano e Deserto. Cada bioma possui 5 tipos de inimigos temáticos.
+-   **Bestiário com 31 Inimigos:** Inclui **25 inimigos normais** com comportamentos únicos, **5 chefes únicos** no final de cada bioma e **1 chefe final (Sauron)** com múltiplas fases e ataques.
+-   **5 Biomas Distintos:** Gelo, Pântano, Deserto, Floresta e Ruinas. Cada bioma possui 5 tipos de inimigos temáticos.
 -   **Estrutura de Jornada:** O jogo progride através de 3 estágios. Cada estágio consiste em 3 batalhas aleatórias seguidas por um **chefe de bioma**.
 -   **Narrativa Procedural:** Após cada vitória, um texto narrativo aleatório e único é exibido para dar imersão à jornada.
 -   **Sistema de Recursos:** O grupo compartilha um estoque de 3 poções de cura por batalha, e a vida/mana são recuperadas parcialmente após batalhas normais e totalmente após derrotar um chefe.
